@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+# PATH TO YOUR HOSTS FILE
+ETC_HOSTS=/etc/hosts
+
+if [ $# -lt 1 ]; then
+  echo "Not enough arguments provided"
+  exit 1
+fi
+
+function addhost() {
+  IP=$1
+  HOSTNAME=$2
+  HOSTS_LINE="$IP\t$HOSTNAME"
+  # echo ${HOSTS_LINE}
+  if [ -n "$(grep $HOSTNAME /etc/hosts)" ]; then
+    echo "$HOSTNAME already exists";
+  else
+    echo "Adding $HOSTNAME to your $ETC_HOSTS";
+    sudo -- sh -c -e "echo '$HOSTS_LINE' >> /etc/hosts";
+    if [ -n "$(grep $HOSTNAME /etc/hosts)" ]
+        then
+            echo "$HOSTNAME was added succesfully";
+        else
+            echo "Failed to Add $HOSTNAME, Try again!";
+    fi
+  fi
+}
+
+function removehost() {
+  HOSTNAME=$1
+  if [ -n "$(grep $HOSTNAME /etc/hosts)" ]; then
+    echo "$HOSTNAME Found in your $ETC_HOSTS, Removing now...";
+    sudo sed -i".bak" "/$HOSTNAME/d" $ETC_HOSTS
+  else
+    echo "$HOSTNAME was not found in your $ETC_HOSTS";
+  fi
+}
+
+if [ $1 = "add" ]; then
+  if [ $# -lt 3 ]; then
+    echo "Please pass minimun three arguments <ip> & <hostname>"
+    exit 1
+  fi
+  addhost $2 $3
+else
+  if [ $# -lt 2 ]; then
+    echo "Please pass minimun two arguments <ip> & <hostname>"
+    exit 1
+  fi
+  removehost $2
+f
