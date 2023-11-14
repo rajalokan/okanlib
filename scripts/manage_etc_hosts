@@ -49,4 +49,4 @@ else
     exit 1
   fi
   removehost $2
-f
+fi
